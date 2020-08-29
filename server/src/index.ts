@@ -19,7 +19,7 @@ const mount = async (app: Application) => {
   console.log(`[app]: https://localhost:${process.env.PORT}`);
 
   const listings = await db.listings.find({}).toArray();
-  console.log(listings);
+  // console.log('a',db.listings.find({}).toArray());
 };
 
 mount(express());
