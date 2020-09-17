@@ -1,8 +1,6 @@
-require("dotenv").config({ path: __dirname + "/.env" });
-
 import { ObjectId } from "mongodb";
-import { connectDatabase } from "../database";
-import { Listing } from "../lib/types";
+import { connectDatabase } from "../src/database";
+import { Listing } from "../src/lib/types";
 
 const seed = async () => {
   try {
