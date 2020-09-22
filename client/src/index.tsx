@@ -6,8 +6,8 @@ import {
   createHttpLink,
   ApolloProvider
 } from '@apollo/client';
+import App from './App'
 import "./styles/index.css";
-import { Listings2 } from './sections/Listings'
 import * as serviceWorker from './serviceWorker';
 
 export const link = createHttpLink({
@@ -21,7 +21,7 @@ const client = new ApolloClient({
 
 render(
   <ApolloProvider client={client}>
-    <Listings2 title="hello" />
+    <App />
   </ApolloProvider>,
   document.getElementById('root')
 );

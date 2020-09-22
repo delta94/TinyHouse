@@ -1,16 +1,14 @@
 import React, { FunctionComponent, useState, useEffect } from "react";
 import { gql } from "apollo-boost";
 import { useQuery, useMutation } from "@apollo/react-hooks";
-import { Avatar, Button, List, Spin } from "antd";
-import { ListingsSkeleton } from "./components/ListingsSkeleton";
+import { Avatar, Button, List, Spin, Alert } from "antd";
 import { Listings as ListingsData } from "./__generated__/Listings";
+import { ListingsSkeleton } from "./components/ListingsSkeleton";
 import {
   DeleteListing as DeleteListingData,
   DeleteListingVariables
 } from "./__generated__/DeleteListing";
 import "./styles/Listings.css";
-// import { server, useQuery, useMutation } from "../../lib/apis";
-// import { ListingsData, DeleteListingData, DeleteListingVariables } from "./types";
 
 const LISTINGS = gql`
   query Listings {
@@ -41,13 +39,9 @@ interface Props {
 }
 
 
-export const Listings = () => {
-    return <h2>hello</h2>;
-};
 
-export const Listings2 = ({ title }: Props) => {
+export const Listings = ({ title }: Props) => {
     const { data, refetch, loading, error } = useQuery<ListingsData>(LISTINGS);
-    console.log(data)
     // const [listings, setListings] = useState<Listing[] | null>(null)
     // useEffect(() => {
     //     fetchListings();
@@ -72,15 +66,15 @@ export const Listings2 = ({ title }: Props) => {
       <h4>Deletion in progress...</h4>
     ) : null;
 
-    const deleteListingErrorMessage = deleteListingError ? (
-      <h4>
-      Uh oh! Something went wrong with deleting :(. Please try again soon.
-      </h4>
+    const deleteListingErrorAlert = deleteListingError ? (
+      <Alert
+        type="error"
+        message="Uh oh! Something went wrong :(. Please try again later."
+        className="listings__alert"
+      />
     ) : null;
 
     const listings = data ? data.listings : null;
-
-    // console.log(data)
 
     const listingsList = listings ? (
         // <ul>
@@ -123,16 +117,20 @@ export const Listings2 = ({ title }: Props) => {
     }
     
     if(error) {
-      return <h2>Uh oh! Something went wrong - please try again later :(</h2>;
+      return (
+      <div className="listings">
+        <ListingsSkeleton title={title} error />
+      </div>
+      );
     }
 
     return (
         <div className="listings">
+          {deleteListingErrorAlert}
           <Spin spinning={deleteListingLoading}>
               <h2>hello {title}</h2>
               { listingsList }
               { deleteListingLoadingMessage }
-              { deleteListingErrorMessage }
           </Spin>
         </div>
     )
