@@ -11,6 +11,13 @@ export interface Listing {
   numOfBaths: number;
   rating: number;
 }
+export interface Viewer {
+  _id?: string;
+  token?: string;
+  avatar?: string;
+  walletId?: string;
+  didRequest: boolean;
+}
 
 export interface Database {
   listings: Collection<Listing>;
