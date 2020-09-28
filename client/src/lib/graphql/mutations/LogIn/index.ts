@@ -1,8 +1,8 @@
 import { gql } from "apollo-boost";
 
 export const LOG_IN = gql`
-    mutation LogIn($input: LogInInput) {
-        LogIn(input: $input) {
+    mutation logIn($input: LogInInput) {
+        logIn(input: $input) {
             id
             token
             avatar
