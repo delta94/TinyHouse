@@ -19,10 +19,10 @@ export const Google = {
     auth.setCredentials(tokens);
 
     const { data } = await google.people({ version: "v1", auth }).people.get({
-      resourceName: "pepple/me",
+      resourceName: "people/me",
       personFields: "emailAddresses,names,photos",
     });
 
-    return { users: data };
+    return { user: data };
   },
 };
