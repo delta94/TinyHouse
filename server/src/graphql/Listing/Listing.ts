@@ -9,17 +9,17 @@ export const listingResolvers: IResolvers = {
     }
   },
   Mutation: {
-    deleteListing: async(_root: undefined, { id }: { id: string }, { db } : { db: Database }): Promise<Listing> => {
-      const deleteRes = await db.listings.findOneAndDelete({
-        _id: new ObjectId(id)
-      })
+    // deleteListing: async(_root: undefined, { id }: { id: string }, { db } : { db: Database }): Promise<Listing> => {
+    //   const deleteRes = await db.listings.findOneAndDelete({
+    //     _id: new ObjectId(id)
+    //   })
 
-      if(!deleteRes.value) {
-        throw new Error("Failed to delete Listing");
-      }
+    //   if(!deleteRes.value) {
+    //     throw new Error("Failed to delete Listing");
+    //   }
 
-      return deleteRes.value
-    }
+    //   return deleteRes.value
+    // }
   },
   Listing: {
     id: (listing: Listing) => listing._id.toString()

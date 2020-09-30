@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, Layout, Typography } from "antd";
-import { useApolloClient } from "@apollo/react-hooks";
+import { useApolloClient, useMutation } from "@apollo/react-hooks";
 import googleLogo from "./assets/google_logo.jpg";
 import { Viewer } from "../../lib/types";
 import { AUTH_URL } from "../../lib/graphql/queries/AuthUrl";
@@ -15,13 +15,18 @@ interface Props {
 
 export const Login = ({ setViewer }: Props) => {
   const client = useApolloClient();
+  console.log(AUTH_URL)
   const handleAuthorize = async () => {
+    console.log(AUTH_URL)
     try {
       const { data } = await client.query<AuthUrlData>({
         query: AUTH_URL
       });
+      console.log(data.authUrl)
       window.location.href = data.authUrl;
-    } catch {}
+    } catch(err) {
+      console.log(err)
+    }
   };
   return (
     <Content className="log-in">
