@@ -17,9 +17,17 @@ export const listingResolvers: IResolvers = {
     //   const deleteRes = await db.listings.findOneAndDelete({
     //     _id: new ObjectId(id)
     //   })
+<<<<<<< HEAD
     //   if(!deleteRes.value) {
     //     throw new Error("Failed to delete Listing");
     //   }
+=======
+
+    //   if(!deleteRes.value) {
+    //     throw new Error("Failed to delete Listing");
+    //   }
+
+>>>>>>> 7815e3cecbc3dce54a789fff9583b768e358dddd
     //   return deleteRes.value
     // }
   },

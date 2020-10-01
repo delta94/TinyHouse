@@ -1,22 +1,13 @@
 import React from 'react';
 import { render } from 'react-dom';
-import {
-  ApolloClient,
-  InMemoryCache,
-  createHttpLink,
-  ApolloProvider
-} from '@apollo/client';
+import { ApolloProvider } from "@apollo/react-hooks";
+import ApolloClient from "apollo-boost";
 import App from './App'
 import "./styles/index.css";
 import * as serviceWorker from './serviceWorker';
 
-export const link = createHttpLink({
-  uri: "http://localhost:3000/api"
-});
-
 const client = new ApolloClient({
-  cache: new InMemoryCache(),
-  link
+  uri: "http://localhost:9000/api"
 });
 
 render(

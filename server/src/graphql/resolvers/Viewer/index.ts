@@ -1,5 +1,4 @@
 import { IResolvers } from 'apollo-server-express';
-import { Response, Request } from 'express';
 import { Viewer, Database, User } from '../../../lib/types';
 import { Google } from '../../../lib/api';
 import { LogInArgs } from './type';
@@ -75,7 +74,6 @@ const logInViaGoogle = async (
   return viewer;
 };
 
-
 export const viewerResolvers: IResolvers = {
   Query: {
     authUrl: () => {
@@ -116,15 +114,14 @@ export const viewerResolvers: IResolvers = {
     },
     logOut: (
       _root: undefined,
-      _args: {},
-      { res }: { res: Response }
+      _args: {}
     ): Viewer => {
       try {
         return { didRequest: true };
       } catch (error) {
         throw new Error(`Failed to logout: ${error}`);
       }
-    },
+    }
   },
   Viewer: {
     id: (viewer: Viewer): string | undefined => {

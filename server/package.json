@@ -2,11 +2,11 @@
   "name": "tinyhouse-v1-server",
   "version": "0.1.0",
   "dependencies": {
-    "apollo-server-express": "^2.11.0",
+    "apollo-server-express": "^2.9.9",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "googleapis": "^60.0.1",
-    "graphql": "^14.6.0",
+    "graphql": "^14.5.8",
     "lodash.merge": "^4.6.2",
     "mongodb": "^3.5.5"
   },
