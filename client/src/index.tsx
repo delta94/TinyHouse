@@ -7,7 +7,15 @@ import "./styles/index.css";
 import * as serviceWorker from './serviceWorker';
 
 const client = new ApolloClient({
-  uri: "http://localhost:9000/api"
+  uri: "http://localhost:9000/api",
+  request: async (operation) => {
+    const token = sessionStorage.getItem('token');
+    operation.setContext({
+      headers: {
+        'X-CSRF-TOKEN': token || ''
+      }
+    });
+  }
 });
 
 render(

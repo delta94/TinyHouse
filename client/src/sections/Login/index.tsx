@@ -25,13 +25,15 @@ interface Props {
 }
 
 export const Login = ({ setViewer }: Props) => {
+  const client = useApolloClient();
   const [
     logIn,
     { data: logInData, loading: logInLoading, error: logInError },
   ] = useMutation<LogInData, logInVariables>(LOG_IN, {
     onCompleted: (data) => {
-      if (data && data.logIn) {
+      if (data && data.logIn && data.logIn.token) {
         setViewer(data.logIn);
+        sessionStorage.setItem('token', data.logIn.token);
         displaySuccessNotification("You've successfully logged in!");
       }
     },
@@ -49,7 +51,6 @@ export const Login = ({ setViewer }: Props) => {
       });
     }
   }, []);
-  const client = useApolloClient();
 
   if (logInLoading) {
     return (
@@ -59,7 +60,7 @@ export const Login = ({ setViewer }: Props) => {
     );
   }
 
-  if (logInData && logInData) {
+  if (logInData && logInData.logIn) {
     const { id: viewerId } = logInData.logIn;
     return <Redirect to={`/user/${viewerId}`} />;
   }
@@ -68,7 +69,6 @@ export const Login = ({ setViewer }: Props) => {
       const { data } = await client.query<AuthUrlData>({
         query: AUTH_URL,
       });
-      console.log(data.authUrl);
       window.location.href = data.authUrl;
     } catch (err) {
       displayErrorMessage(

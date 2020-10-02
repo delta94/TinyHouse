@@ -5,6 +5,7 @@ import { useMutation } from "@apollo/react-hooks";
 import { LOG_OUT } from "../../../../lib/graphql/mutations/LogOut";
 import { LogOut as LogOutData } from "../../../../lib/graphql/mutations/LogOut/__generated__/LogOut";
 import { Viewer } from "../../../../lib/types";
+import { displayErrorMessage, displaySuccessNotification } from "../../../../lib/utils";
 
 const { Item, SubMenu } = Menu;
 
@@ -14,7 +15,20 @@ interface MenuItemsProps {
 }
 
 export const MenuItems = ({ viewer, setViewer }: MenuItemsProps) => {
-  const [logOut] = useMutation<LogOutData>(LOG_OUT);
+  const [logOut] = useMutation<LogOutData>(LOG_OUT, {
+    onCompleted: (data) => {
+      if (data && data.logOut) {
+        setViewer(data.logOut);
+        sessionStorage.removeItem('token');
+        displaySuccessNotification("You've successfully logged out!");
+      }
+    },
+    onError: () => {
+      displayErrorMessage(
+        "Sorry! We weren't able to log you out. Please try again."
+      );
+    }
+  });
 
   const handleLogOut = () => {
     logOut();
