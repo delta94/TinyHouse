@@ -1,18 +1,19 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "antd";
-import logo from "./assets/tinyhouse-logo.png";
 import { Viewer } from "../../lib/types";
 import { MenuItems } from "./components";
 
-const { Header } = Layout;
+import logo from "./assets/tinyhouse-logo.png";
 
-interface AppHeaderProps {
+interface Props {
   viewer: Viewer;
   setViewer: (viewer: Viewer) => void;
 }
 
-const AppHeader = ({ viewer, setViewer }: AppHeaderProps) => {
+const { Header } = Layout;
+
+export const AppHeader = ({ viewer, setViewer }: Props) => {
   return (
     <Header className="app-header">
       <div className="app-header__logo-search-section">
@@ -28,5 +29,3 @@ const AppHeader = ({ viewer, setViewer }: AppHeaderProps) => {
     </Header>
   );
 };
-
-export default AppHeader;

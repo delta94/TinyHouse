@@ -1,44 +1,45 @@
 import React, { useEffect, useRef } from "react";
-import { Card, Layout, Spin, Typography } from "antd";
+import { Redirect } from "react-router-dom";
 import { useApolloClient, useMutation } from "@apollo/react-hooks";
-import googleLogo from "./assets/google_logo.jpg";
-import { Viewer } from "../../lib/types";
-import { AUTH_URL } from "../../lib/graphql/queries/AuthUrl";
-import { AuthUrl as AuthUrlData } from "../../lib/graphql/queries/AuthUrl/__generated__/AuthUrl";
-import { LOG_IN } from "../../lib/graphql/mutations/LogIn";
-import {
-  logIn as LogInData,
-  logInVariables,
-} from "../../lib/graphql/mutations/LogIn/__generated__/logIn";
+import { Card, Layout, Spin, Typography } from "antd";
 import { ErrorBanner } from "../../lib/components";
+import { LOG_IN } from "../../lib/graphql/mutations";
+import { AUTH_URL } from "../../lib/graphql/queries";
+import {
+  LogIn as LogInData,
+  LogInVariables
+} from "../../lib/graphql/mutations/LogIn/__generated__/LogIn";
+import { AuthUrl as AuthUrlData } from "../../lib/graphql/queries/AuthUrl/__generated__/AuthUrl";
 import {
   displaySuccessNotification,
-  displayErrorMessage,
+  displayErrorMessage
 } from "../../lib/utils";
-import { Redirect } from "react-router-dom";
+import { Viewer } from "../../lib/types";
 
-const { Content } = Layout;
-const { Text, Title } = Typography;
+// Image Assets
+import googleLogo from "./assets/google_logo.jpg";
 
 interface Props {
   setViewer: (viewer: Viewer) => void;
 }
 
+const { Content } = Layout;
+const { Text, Title } = Typography;
+
 export const Login = ({ setViewer }: Props) => {
   const client = useApolloClient();
   const [
     logIn,
-    { data: logInData, loading: logInLoading, error: logInError },
-  ] = useMutation<LogInData, logInVariables>(LOG_IN, {
-    onCompleted: (data) => {
+    { data: logInData, loading: logInLoading, error: logInError }
+  ] = useMutation<LogInData, LogInVariables>(LOG_IN, {
+    onCompleted: data => {
       if (data && data.logIn && data.logIn.token) {
         setViewer(data.logIn);
-        sessionStorage.setItem('token', data.logIn.token);
+        sessionStorage.setItem("token", data.logIn.token);
         displaySuccessNotification("You've successfully logged in!");
       }
-    },
+    }
   });
-
   const logInRef = useRef(logIn);
 
   useEffect(() => {
@@ -46,11 +47,24 @@ export const Login = ({ setViewer }: Props) => {
     if (code) {
       logInRef.current({
         variables: {
-          input: { code },
-        },
+          input: { code }
+        }
       });
     }
   }, []);
+
+  const handleAuthorize = async () => {
+    try {
+      const { data } = await client.query<AuthUrlData>({
+        query: AUTH_URL
+      });
+      window.location.href = data.authUrl;
+    } catch {
+      displayErrorMessage(
+        "Sorry! We weren't able to log you in. Please try again later!"
+      );
+    }
+  };
 
   if (logInLoading) {
     return (
@@ -64,21 +78,9 @@ export const Login = ({ setViewer }: Props) => {
     const { id: viewerId } = logInData.logIn;
     return <Redirect to={`/user/${viewerId}`} />;
   }
-  const handleAuthorize = async () => {
-    try {
-      const { data } = await client.query<AuthUrlData>({
-        query: AUTH_URL,
-      });
-      window.location.href = data.authUrl;
-    } catch (err) {
-      displayErrorMessage(
-        "Sorry! We weren't able to log you in. Please try again later!"
-      );
-    }
-  };
 
   const logInErrorBannerElement = logInError ? (
-    <ErrorBanner description="We weren't able to log you in. Please try again soon." />
+    <ErrorBanner description="Sorry! We weren't able to log you in. Please try again later!" />
   ) : null;
 
   return (
@@ -90,6 +92,9 @@ export const Login = ({ setViewer }: Props) => {
             <span role="img" aria-label="wave">
               👋
             </span>
+          </Title>
+          <Title level={3} className="log-in-card__intro-title">
+            Log in to TinyHouse!
           </Title>
           <Text>Sign in with Google to start booking available rentals!</Text>
         </div>

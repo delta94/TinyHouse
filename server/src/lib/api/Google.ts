@@ -1,4 +1,4 @@
-import { google } from 'googleapis';
+import { google } from "googleapis";
 
 const auth = new google.auth.OAuth2(
   process.env.G_CLIENT_ID,
@@ -6,15 +6,13 @@ const auth = new google.auth.OAuth2(
   `${process.env.PUBLIC_URL}/login`
 );
 
-console.log(auth)
-
-
 export const Google = {
   authUrl: auth.generateAuthUrl({
-    access_type: 'online',
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    access_type: "online",
     scope: [
-      'https://www.googleapis.com/auth/userinfo.email',
-      'https://www.googleapis.com/auth/userinfo.profile'
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/userinfo.profile"
     ]
   }),
   logIn: async (code: string) => {
@@ -22,9 +20,9 @@ export const Google = {
 
     auth.setCredentials(tokens);
 
-    const { data } = await google.people({ version: 'v1', auth }).people.get({
-      resourceName: 'people/me',
-      personFields: 'emailAddresses,names,photos'
+    const { data } = await google.people({ version: "v1", auth }).people.get({
+      resourceName: "people/me",
+      personFields: "emailAddresses,names,photos"
     });
 
     return { user: data };

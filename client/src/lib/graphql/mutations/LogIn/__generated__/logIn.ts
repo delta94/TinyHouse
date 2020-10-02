@@ -1,15 +1,14 @@
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 import { LogInInput } from "./../../../globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: logIn
+// GraphQL mutation operation: LogIn
 // ====================================================
 
-export interface logIn_logIn {
+export interface LogIn_logIn {
   __typename: "Viewer";
   id: string | null;
   token: string | null;
@@ -18,10 +17,10 @@ export interface logIn_logIn {
   didRequest: boolean;
 }
 
-export interface logIn {
-  logIn: logIn_logIn;
+export interface LogIn {
+  logIn: LogIn_logIn;
 }
 
-export interface logInVariables {
+export interface LogInVariables {
   input?: LogInInput | null;
 }
