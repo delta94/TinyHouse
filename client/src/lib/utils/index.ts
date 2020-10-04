@@ -9,8 +9,8 @@ export const displaySuccessNotification = (
     description,
     placement: "topLeft",
     style: {
-      marginTop: 50,
-    },
+      marginTop: 50
+    }
   });
 };
 

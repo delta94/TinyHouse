@@ -1,29 +1,41 @@
-import { IResolvers } from 'apollo-server-express';
-import { Viewer, Database, User } from '../../../lib/types';
-import { Google } from '../../../lib/api';
-import { LogInArgs } from './type';
-import crypto from 'crypto';
+import crypto from "crypto";
+import { Request, Response } from "express";
+import { IResolvers } from "apollo-server-express";
+import { Google } from "../../../lib/api";
+import { Viewer, Database, User } from "../../../lib/types";
+import { LogInArgs } from "./types";
 
+const cookieOptions = {
+  httpOnly: true,
+  sameSite: true,
+  signed: true,
+  secure: process.env.NODE_ENV === "development" ? false : true
+};
 
 const logInViaGoogle = async (
   code: string,
   token: string,
   db: Database,
+  res: Response
 ): Promise<User | undefined> => {
   const { user } = await Google.logIn(code);
 
   if (!user) {
-    throw new Error(`Google login error `);
+    throw new Error("Google login error");
   }
 
+  // Name/Photo/Email Lists
   const userNamesList = user.names && user.names.length ? user.names : null;
   const userPhotosList = user.photos && user.photos.length ? user.photos : null;
-  const userEmailList =
+  const userEmailsList =
     user.emailAddresses && user.emailAddresses.length
       ? user.emailAddresses
       : null;
 
+  // User Display Name
   const userName = userNamesList ? userNamesList[0].displayName : null;
+
+  // User Id
   const userId =
     userNamesList &&
     userNamesList[0].metadata &&
@@ -31,14 +43,16 @@ const logInViaGoogle = async (
       ? userNamesList[0].metadata.source.id
       : null;
 
+  // User Avatar
   const userAvatar =
     userPhotosList && userPhotosList[0].url ? userPhotosList[0].url : null;
 
+  // User Email
   const userEmail =
-    userEmailList && userEmailList[0].value ? userEmailList[0].value : null;
+    userEmailsList && userEmailsList[0].value ? userEmailsList[0].value : null;
 
-  if (!userName || !userId || !userAvatar || !userEmail) {
-    throw new Error('Google login error');
+  if (!userId || !userName || !userAvatar || !userEmail) {
+    throw new Error("Google login error");
   }
 
   const updateRes = await db.users.findOneAndUpdate(
@@ -57,7 +71,7 @@ const logInViaGoogle = async (
   let viewer = updateRes.value;
 
   if (!viewer) {
-    const insertRes = await db.users.insertOne({
+    const insertResult = await db.users.insertOne({
       _id: userId,
       token,
       name: userName,
@@ -68,7 +82,33 @@ const logInViaGoogle = async (
       listings: []
     });
 
-    viewer = insertRes.ops[0];
+    viewer = insertResult.ops[0];
+  }
+
+  res.cookie("viewer", userId, {
+    ...cookieOptions,
+    maxAge: 365 * 24 * 60 * 60 * 1000
+  });
+
+  return viewer;
+};
+
+const logInViaCookie = async (
+  token: string,
+  db: Database,
+  req: Request,
+  res: Response
+): Promise<User | undefined> => {
+  const updateRes = await db.users.findOneAndUpdate(
+    { _id: req.signedCookies.viewer },
+    { $set: { token } },
+    { returnOriginal: false }
+  );
+
+  let viewer = updateRes.value;
+
+  if (!viewer) {
+    res.clearCookie("viewer", cookieOptions);
   }
 
   return viewer;
@@ -76,7 +116,7 @@ const logInViaGoogle = async (
 
 export const viewerResolvers: IResolvers = {
   Query: {
-    authUrl: () => {
+    authUrl: (): string => {
       try {
         return Google.authUrl;
       } catch (error) {
@@ -88,14 +128,15 @@ export const viewerResolvers: IResolvers = {
     logIn: async (
       _root: undefined,
       { input }: LogInArgs,
-      { db }: { db: Database }
+      { db, req, res }: { db: Database; req: Request; res: Response }
     ): Promise<Viewer> => {
       try {
         const code = input ? input.code : null;
-        const token = crypto.randomBytes(16).toString('hex');
+        const token = crypto.randomBytes(16).toString("hex");
+
         const viewer: User | undefined = code
-          ? await logInViaGoogle(code, token, db)
-          : undefined;
+          ? await logInViaGoogle(code, token, db, res)
+          : await logInViaCookie(token, db, req, res);
 
         if (!viewer) {
           return { didRequest: true };
@@ -109,17 +150,19 @@ export const viewerResolvers: IResolvers = {
           didRequest: true
         };
       } catch (error) {
-        throw new Error(`Failed to login: ${error}`);
+        throw new Error(`Failed to log in: ${error}`);
       }
     },
     logOut: (
       _root: undefined,
-      _args: {}
+      _args: {},
+      { res }: { res: Response }
     ): Viewer => {
       try {
+        res.clearCookie("viewer", cookieOptions);
         return { didRequest: true };
       } catch (error) {
-        throw new Error(`Failed to logout: ${error}`);
+        throw new Error(`Failed to log out: ${error}`);
       }
     }
   },

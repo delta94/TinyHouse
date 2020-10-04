@@ -1,10 +1,6 @@
 import { gql } from "apollo-server-express";
 
 export const typeDefs = gql`
-  input LogInInput {
-    code: String!
-  }
-
   type Viewer {
     id: ID
     token: String
@@ -13,20 +9,11 @@ export const typeDefs = gql`
     didRequest: Boolean!
   }
 
-  type Listing {
-    id: ID!
-    title: String!
-    image: String!
-    address: String!
-    price: Int!
-    numOfGuests: Int!
-    numOfBeds: Int!
-    numOfBaths: Int!
-    rating: Int!
+  input LogInInput {
+    code: String!
   }
 
   type Query {
-    listings: [Listing!]!
     authUrl: String!
   }
 
