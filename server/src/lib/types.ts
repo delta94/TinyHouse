@@ -1,5 +1,6 @@
 import { Collection, ObjectId } from "mongodb";
 
+
 export interface Viewer {
   _id?: string;
   token?: string;
@@ -29,6 +30,7 @@ export interface Booking {
   checkOut: string;
 }
 
+
 export interface Listing {
   _id: ObjectId;
   title: string;
@@ -56,6 +58,7 @@ export interface User {
   income: number;
   bookings: ObjectId[];
   listings: ObjectId[];
+  authorized?: boolean;
 }
 
 export interface Database {
