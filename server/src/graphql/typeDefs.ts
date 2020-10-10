@@ -9,6 +9,11 @@ export const typeDefs = gql`
     didRequest: Boolean!
   }
 
+  enum ListingType {
+    APARTMENT
+    HOUSE
+  }
+
   type Bookings {
     total: Int!
     result: [Booking!]!
@@ -20,11 +25,6 @@ export const typeDefs = gql`
     tenant: User!
     checkIn: String!
     checkOut: String!
-  }
-
-  enum ListingType {
-    APARTMENT
-    HOUSE
   }
 
   type Listings {
@@ -64,7 +64,7 @@ export const typeDefs = gql`
 
   type Query {
     authUrl: String!
-    user: String!
+    user(id: ID!): User!
   }
 
   type Mutation {
