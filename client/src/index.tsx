@@ -102,8 +102,8 @@ const App = () => {
         </Switch>
       </Layout>
     </Router>
-  );
-};
+  );;
+}
 
 render(
   <ApolloProvider client={client}>

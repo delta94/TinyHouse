@@ -1,16 +1,21 @@
-import { Request } from 'express';
+import { Request } from "express";
 import { IResolvers } from "apollo-server-express";
 import { Database, User } from "../../../lib/types";
-import { UserArgs, UserBookingData, UserBookingArgs, UserListingsArgs, UserListingsData } from "./types";
-import { authorize } from '../../../lib/utils';
-
+import {
+  UserArgs,
+  UserBookingData,
+  UserBookingArgs,
+  UserListingsArgs,
+  UserListingsData,
+} from "./types";
+import { authorize } from "../../../lib/utils";
 
 export const userResolvers: IResolvers = {
   Query: {
     user: async (
       _root: undefined,
       { id }: UserArgs,
-      { db, req }: { db: Database, req: Request }
+      { db, req }: { db: Database; req: Request }
     ): Promise<User> => {
       try {
         const user = await db.users.findOne({ _id: id });
@@ -21,15 +26,15 @@ export const userResolvers: IResolvers = {
 
         const viewer = await authorize(db, req);
 
-        if(viewer && viewer._id === user._id) {
+        if (viewer && viewer._id === user._id) {
           user.authorized = true;
         }
 
         return user;
-      } catch(err) {
-        throw new Error(`Failed to query user: ${err}`)
+      } catch (err) {
+        throw new Error(`Failed to query user: ${err}`);
       }
-    }
+    },
   },
   User: {
     id: (user: User): string => {
@@ -39,12 +44,12 @@ export const userResolvers: IResolvers = {
       return Boolean(user.walletId);
     },
     income: (user: User): number | null => {
-      return user.authorized ? user.income : null
+      return user.authorized ? user.income : null;
     },
-    bookings: async(
+    bookings: async (
       user: User,
-      { limit, page } : UserBookingArgs,
-      { db } : { db: Database }
+      { limit, page }: UserBookingArgs,
+      { db }: { db: Database }
     ): Promise<UserBookingData | null> => {
       try {
         if (!user.authorized) {
@@ -52,12 +57,12 @@ export const userResolvers: IResolvers = {
         }
         const data: UserBookingData = {
           total: 0,
-          result: []
-        }
+          result: [],
+        };
 
-        let cursor =  await db.bookings.find({
-          _id: { $in: user.bookings }
-        })
+        let cursor = await db.bookings.find({
+          _id: { $in: user.bookings },
+        });
 
         cursor = cursor.skip(page > 0 ? (page - 1) * limit : 0);
         cursor = cursor.limit(limit);
@@ -66,11 +71,11 @@ export const userResolvers: IResolvers = {
         data.result = await cursor.toArray();
 
         return data;
-      } catch(err) {
+      } catch (err) {
         throw new Error(`Failed to query user bookings: ${err}`);
       }
     },
-    listings: async(
+    listings: async (
       user: User,
       { limit, page }: UserListingsArgs,
       { db }: { db: Database }
@@ -78,23 +83,23 @@ export const userResolvers: IResolvers = {
       try {
         const data: UserListingsData = {
           total: 0,
-          result: []
-        }
+          result: [],
+        };
 
         let cursor = await db.listings.find({
-          _id: { $in: user.listings }
-        })
+          _id: { $in: user.listings },
+        });
 
-        cursor = cursor.skip(page > 0 ? (page - 1) * limit : 0)
+        cursor = cursor.skip(page > 0 ? (page - 1) * limit : 0);
         cursor = cursor.limit(limit);
 
         data.total = await cursor.count();
         data.result = await cursor.toArray();
 
         return data;
-      } catch(err) {
+      } catch (err) {
         throw new Error(`Failed to query user listings: ${err}`);
       }
-    }
-  }
+    },
+  },
 };
