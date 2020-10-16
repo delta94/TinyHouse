@@ -4,7 +4,7 @@ import { useQuery } from '@apollo/react-hooks';
 import { Col, Layout, Row } from "antd";
 import { USER } from '../../lib/graphql/queries'
 import { User as UserData, UserVariables } from '../../lib/graphql/queries/User/__generated__/User'
-import { UserProfile } from "./components";
+import { UserProfile, UserListings, UserBookings } from "./components";
 import { Viewer } from "../../lib/types";
 import { ErrorBanner, PageSkeleton } from "../../lib/components";
 
@@ -51,13 +51,37 @@ export const User = ({ viewer, match }: Props & RouteComponentProps<MatchParams>
 
   const user = data ? data.user : null;
   const viewerIsUser = viewer.id === match.params.id;
+  const userListings = user ? user.listings : null;
+  const userBookings = user ? user.bookings : null;
 
-  const userProfileElement = user ? <UserProfile user={user} viewerIsUser={viewerIsUser} /> : null 
+  const userProfileElement = user ? <UserProfile user={user} viewerIsUser={viewerIsUser} /> : null;
+
+  const userListingsElement = userListings ? (
+    <UserListings
+      userListings={userListings}
+      listingsPage={listingsPage}
+      limit={PAGE_LIMIT}
+      setListingsPage={setListingsPage}
+    />
+  ) : null;
+
+  const userBookingsElement  = userListings ? (
+    <UserBookings
+      userBookings={userBookings}
+      bookingsPage={bookingsPage}
+      limit={PAGE_LIMIT}
+      setBookingsPage={setBookingsPage}
+    />
+  ) : null;
 
   return (
     <Content className="user">
       <Row gutter={12} type="flex" justify="space-between">
         <Col xs={24}>{userProfileElement}</Col>
+        <Col xs={24}>
+          {userListingsElement}
+          {userBookingsElement}
+        </Col>
       </Row>
     </Content>
   );
