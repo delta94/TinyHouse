@@ -33,7 +33,7 @@ export const ListingCard = ({ listing }: Props) => {
                 <div className="listing-card__details">
                     <div className="listing-card__description">
                         <Title level={4} className="listing-card__price">
-                            ${formatListingPrice(price)}
+                            {formatListingPrice(price)}
                             <span>/day</span>
                         </Title>
                         <Text strong ellipsis className="listing-card__title">

@@ -7,12 +7,12 @@ import { LOG_IN } from "../../lib/graphql/mutations";
 import { AUTH_URL } from "../../lib/graphql/queries";
 import {
   LogIn as LogInData,
-  LogInVariables
-} from "../../lib/graphql/mutations/LogIn/__generated__/LogIn";
+  LogInVariables,
+} from "../../lib/graphql/mutations/LogIn/__generated__/logIn";
 import { AuthUrl as AuthUrlData } from "../../lib/graphql/queries/AuthUrl/__generated__/AuthUrl";
 import {
   displaySuccessNotification,
-  displayErrorMessage
+  displayErrorMessage,
 } from "../../lib/utils";
 import { Viewer } from "../../lib/types";
 
@@ -30,15 +30,15 @@ export const Login = ({ setViewer }: Props) => {
   const client = useApolloClient();
   const [
     logIn,
-    { data: logInData, loading: logInLoading, error: logInError }
+    { data: logInData, loading: logInLoading, error: logInError },
   ] = useMutation<LogInData, LogInVariables>(LOG_IN, {
-    onCompleted: data => {
+    onCompleted: (data) => {
       if (data && data.logIn && data.logIn.token) {
         setViewer(data.logIn);
         sessionStorage.setItem("token", data.logIn.token);
         displaySuccessNotification("You've successfully logged in!");
       }
-    }
+    },
   });
   const logInRef = useRef(logIn);
 
@@ -47,8 +47,8 @@ export const Login = ({ setViewer }: Props) => {
     if (code) {
       logInRef.current({
         variables: {
-          input: { code }
-        }
+          input: { code },
+        },
       });
     }
   }, []);
@@ -56,7 +56,7 @@ export const Login = ({ setViewer }: Props) => {
   const handleAuthorize = async () => {
     try {
       const { data } = await client.query<AuthUrlData>({
-        query: AUTH_URL
+        query: AUTH_URL,
       });
       window.location.href = data.authUrl;
     } catch {
