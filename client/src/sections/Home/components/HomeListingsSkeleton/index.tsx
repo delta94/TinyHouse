@@ -19,7 +19,7 @@ export const HomeListingsSkeleton = () => {
                         <Card
                          cover={
                              <div
-                                style={}
+                                style={{ backgroundImage: `url(${listingLoadingCardCover})` }}
                              ></div>
                          }
                         />
